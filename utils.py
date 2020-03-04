@@ -1,3 +1,5 @@
+import numpy as np
+
 def find_mask(nwb, mask):
     """
     Return bool array with true for trials where the mask was the given one

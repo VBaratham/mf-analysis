@@ -7,6 +7,7 @@ One for each channel
 """
 from argparse import ArgumentParser
 import numpy as np
+import os
 
 import matplotlib.pyplot as plt
 
@@ -14,7 +15,7 @@ from pynwb import NWBHDF5IO
 
 from utils import find_mask
 
-def basic_bar(nwbfile, outdir, freq):
+def basic_bar(nwbfile, outdir, freq, identifier, ext):
     io = NWBHDF5IO(nwbfile, 'a')
     nwb = io.read()
 
@@ -58,16 +59,23 @@ def basic_bar(nwbfile, outdir, freq):
         x = np.arange(2)
         plt.bar(x, [f0_peak_hg_response, non_f0_peak_hg_response])
         plt.xticks(x, ['f0', 'non-f0'])
-        plt.show()
+
+        plt.savefig(os.path.join(args.outdir, 'basic_bar_{}_{}.{}'.format(freq, identifier, ext)))
 
         
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    parser.add_argument('--nwbfile', '--nwb', type=str, required=True)
-    parser.add_argument('--outdir', type=str, required=True)
+    parser.add_argument('--nwbfile', '--nwb', type=str, required=True,
+                        help='location of nwb file to analyze')
+    parser.add_argument('--outdir', type=str, required=True,
+                        help='name of directory to save plots')
     parser.add_argument('--freq', type=float, required=False, default=500.0)
+    parser.add_argument('--ext', '--filetype', type=str, required=False, default='pdf',
+                        help='file extension for plots (anything recognized by matplotlib)')
+    parser.add_argument('--identifier', type=str, required=False, default='',
+                        help='string to append to filename')
 
     args = parser.parse_args()
 
-    basic_bar(args.nwbfile, args.outdir, args.freq)
+    basic_bar(args.nwbfile, args.outdir, args.freq, args.identifier, args.ext)
